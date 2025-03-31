@@ -11,4 +11,6 @@ router.get('/websites/:id/ping-results', pingController.getPingResults);
 
 router.post('/websites/:id/ping', pingController.triggerPing);
 
+router.delete('/websites/:id', websiteController.deleteWebsite);
+
 module.exports = router;

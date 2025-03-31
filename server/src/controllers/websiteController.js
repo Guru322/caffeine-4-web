@@ -1,4 +1,5 @@
 const Website = require('../models/Website');
+const PingResult = require('../models/PingResult');
 
 exports.addWebsite = async (req, res) => {
     const { url } = req.body;
@@ -20,15 +21,30 @@ exports.getWebsites = async (req, res) => {
     }
 };
 
+/**
+ * Delete a website by ID
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
 exports.deleteWebsite = async (req, res) => {
-    const { id } = req.params;
     try {
-        const deletedWebsite = await Website.findByIdAndDelete(id);
-        if (!deletedWebsite) {
-            return res.status(404).json({ message: 'Website not found' });
+        const { id } = req.params;
+        
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ error: 'Invalid website ID format' });
         }
-        res.status(200).json({ message: 'Website deleted successfully' });
+
+        const deletedWebsite = await Website.findByIdAndDelete(id);
+        
+        if (!deletedWebsite) {
+            return res.status(404).json({ error: 'Website not found' });
+        }
+        
+        await PingResult.deleteMany({ website: id });
+        
+        return res.status(200).json({ message: 'Website deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error deleting website:', error);
+        return res.status(500).json({ error: 'Server error' });
     }
 };

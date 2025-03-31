@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/websites';
+const API_URL = 'localhost:5000/api/websites';
 
 export const addWebsite = async (website) => {
     try {
