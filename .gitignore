@@ -4,3 +4,4 @@ client/build
 client/.env
 client/.env.local
 server/.env
+server/src/serviceAccountKey.json

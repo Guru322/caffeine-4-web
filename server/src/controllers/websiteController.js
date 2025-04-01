@@ -1,12 +1,20 @@
-const Website = require('../models/Website');
-const PingResult = require('../models/PingResult');
+const { db } = require('../config/firebase');
 
 exports.addWebsite = async (req, res) => {
-    const { url } = req.body;
+    const { url, userId } = req.body;
     try {
-        const newWebsite = new Website({ url });
-        await newWebsite.save();
-        res.status(201).json(newWebsite);
+        const newWebsite = { 
+            url, 
+            userId,
+            status: 'up',
+            createdAt: new Date()
+        };
+        
+        const docRef = await db.collection('websites').add(newWebsite);
+        res.status(201).json({ 
+            id: docRef.id,
+            ...newWebsite 
+        });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -14,7 +22,23 @@ exports.addWebsite = async (req, res) => {
 
 exports.getWebsites = async (req, res) => {
     try {
-        const websites = await Website.find();
+        const { userId } = req.query;
+        let websitesQuery = db.collection('websites');
+        
+        if (userId) {
+            websitesQuery = websitesQuery.where('userId', '==', userId);
+        }
+        
+        const snapshot = await websitesQuery.get();
+        const websites = [];
+        
+        snapshot.forEach(doc => {
+            websites.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
         res.status(200).json(websites);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -30,17 +54,17 @@ exports.deleteWebsite = async (req, res) => {
     try {
         const { id } = req.params;
         
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-            return res.status(400).json({ error: 'Invalid website ID format' });
-        }
-
-        const deletedWebsite = await Website.findByIdAndDelete(id);
+        await db.collection('websites').doc(id).delete();
         
-        if (!deletedWebsite) {
-            return res.status(404).json({ error: 'Website not found' });
-        }
-        
-        await PingResult.deleteMany({ website: id });
+        const pingResultsSnapshot = await db.collection('pingResults')
+            .where('websiteId', '==', id)
+            .get();
+            
+        const batch = db.batch();
+        pingResultsSnapshot.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
         
         return res.status(200).json({ message: 'Website deleted successfully' });
     } catch (error) {

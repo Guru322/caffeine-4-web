@@ -30,7 +30,7 @@ const Dashboard = () => {
     // Handle website deletion
     const handleWebsiteDelete = (deletedWebsiteId) => {
         setWebsites(prevWebsites => 
-            prevWebsites.filter(website => website._id !== deletedWebsiteId)
+            prevWebsites.filter(website => website.id !== deletedWebsiteId) // Changed from _id to id
         );
     };
 
@@ -58,7 +58,7 @@ const Dashboard = () => {
                 ) : (
                     <Grid container spacing={3}>
                         {websites.map(website => (
-                            <Grid item xs={12} sm={6} md={4} key={website._id}>
+                            <Grid item xs={12} sm={6} md={4} key={website.id}> {/* Changed from _id to id */}
                                 <StatusCard 
                                     website={website} 
                                     onDelete={handleWebsiteDelete} 

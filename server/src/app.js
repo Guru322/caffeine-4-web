@@ -1,13 +1,11 @@
 const express = require('express');
 const path = require('path');
-const connectDB = require('./config/db');
 const apiRoutes = require('./routes/api');
 const monitoringService = require('./services/monitoringService');
+const { cleanupOldPingResults } = require('./services/cleanupService');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -25,4 +23,19 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   
   monitoringService.startMonitoring();
+  
+  const runDailyCleanup = () => {
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0); 
+    
+    const delay = midnight.getTime() - now.getTime();
+    
+    setTimeout(() => {
+      cleanupOldPingResults(30); 
+      runDailyCleanup(); 
+    }, delay);
+  };
+  
+  runDailyCleanup();
 });

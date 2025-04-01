@@ -1,7 +1,5 @@
-const mongoose = require('mongoose');
 const axios = require('axios');
-const Website = require('../models/Website');
-const PingResult = require('../models/PingResult');
+const { db, admin } = require('../config/firebase');
 
 const pingWebsite = async (website) => {
     try {
@@ -11,28 +9,40 @@ const pingWebsite = async (website) => {
         });
         const duration = Date.now() - start;
 
-        const pingResult = new PingResult({
-            website: website._id, 
-            timestamp: new Date(),
+        const pingResult = {
+            websiteId: website.id, 
+            timestamp: admin.firestore.Timestamp.now(),
             responseTime: duration,
             status: response.status,
             isUp: response.status >= 200 && response.status < 400
-        });
+        };
 
-        await pingResult.save();
+        await db.collection('pingResults').add(pingResult);
+        
+        await db.collection('websites').doc(website.id).update({
+            status: 'up',
+            lastChecked: admin.firestore.Timestamp.now()
+        });
+        
         console.log(`Pinged ${website.url} - Status: ${response.status} - Response Time: ${duration}ms`);
         return pingResult;
     } catch (error) {
-        const pingResult = new PingResult({
-            website: website._id, 
-            timestamp: new Date(),
+        const pingResult = {
+            websiteId: website.id, 
+            timestamp: admin.firestore.Timestamp.now(),
             responseTime: 0, 
             status: error.response ? error.response.status : 'DOWN',
             isUp: false,
             error: error.message
-        });
+        };
 
-        await pingResult.save();
+        await db.collection('pingResults').add(pingResult);
+        
+        await db.collection('websites').doc(website.id).update({
+            status: 'down',
+            lastChecked: admin.firestore.Timestamp.now()
+        });
+        
         console.log(`Failed to ping ${website.url} - Status: ${pingResult.status}`);
         return pingResult;
     }
@@ -42,8 +52,17 @@ const startMonitoring = () => {
     console.log("Starting monitoring service...");
     setInterval(async () => {
         try {
-            const websites = await Website.find();
-            console.log(`Checking ${websites.length} websites...`);
+            const websitesSnapshot = await db.collection('websites').get();
+            console.log(`Checking ${websitesSnapshot.size} websites...`);
+            
+            const websites = [];
+            websitesSnapshot.forEach(doc => {
+                websites.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
             for (const website of websites) {
                 try {
                     await pingWebsite(website);
@@ -54,7 +73,7 @@ const startMonitoring = () => {
         } catch (error) {
             console.error("Error in monitoring loop:", error);
         }
-    }, 30000); // 30 seconds
+    }, 30000); 
 };
 
 module.exports = {

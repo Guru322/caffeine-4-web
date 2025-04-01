@@ -36,7 +36,7 @@ const StatusCard = ({ website, onDelete }) => {
         const getLatestPing = async () => {
             try {
                 setLoading(true);
-                const results = await fetchPingResults(website._id);
+                const results = await fetchPingResults(website.id); 
                 if (results && results.length > 0) {
                     setLatestPing(prev => {
                         if (prev && prev.isUp !== results[0].isUp) {
@@ -58,7 +58,7 @@ const StatusCard = ({ website, onDelete }) => {
         getLatestPing();
         const interval = setInterval(getLatestPing, 30000);
         return () => clearInterval(interval);
-    }, [website._id]);
+    }, [website.id]); 
 
     useEffect(() => {
         if (highlight) {
@@ -74,10 +74,10 @@ const StatusCard = ({ website, onDelete }) => {
     const handleConfirmDelete = async () => {
         try {
             setDeleteLoading(true);
-            await deleteWebsite(website._id);
+            await deleteWebsite(website.id); 
             setOpenConfirmDialog(false);
             if (onDelete) {
-                onDelete(website._id);
+                onDelete(website.id); 
             }
         } catch (err) {
             setError('Failed to delete website');

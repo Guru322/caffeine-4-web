@@ -1,11 +1,13 @@
-import axios from 'axios';
-
-const API_URL = 'localhost:5000/api'; 
+import { 
+    fetchWebsites as fetchFirestoreWebsites,
+    addWebsite as addFirestoreWebsite,
+    fetchPingResults as fetchFirestorePingResults,
+    deleteWebsite as deleteFirestoreWebsite
+} from './firestoreService';
 
 export const fetchWebsites = async () => {
     try {
-        const response = await axios.get(`${API_URL}/websites`);
-        return response.data;
+        return await fetchFirestoreWebsites();
     } catch (error) {
         console.error('Error fetching websites:', error);
         throw error;
@@ -14,8 +16,7 @@ export const fetchWebsites = async () => {
 
 export const addWebsite = async (website) => {
     try {
-        const response = await axios.post(`${API_URL}/websites`, website);
-        return response.data;
+        return await addFirestoreWebsite(website);
     } catch (error) {
         console.error('Error adding website:', error);
         throw error;
@@ -24,23 +25,16 @@ export const addWebsite = async (website) => {
 
 export const fetchPingResults = async (websiteId) => {
     try {
-        const response = await axios.get(`${API_URL}/websites/${websiteId}/ping-results`);
-        return response.data;
+        return await fetchFirestorePingResults(websiteId);
     } catch (error) {
         console.error('Error fetching ping results:', error);
         throw error;
     }
 };
 
-/**
- * Delete a website from monitoring
- * @param {string} websiteId - The ID of the website to delete
- * @returns {Promise} - Promise representing the delete operation
- */
 export const deleteWebsite = async (websiteId) => {
     try {
-        const response = await axios.delete(`${API_URL}/websites/${websiteId}`);
-        return response.data;
+        return await deleteFirestoreWebsite(websiteId);
     } catch (error) {
         console.error('Error deleting website:', error);
         throw error;
