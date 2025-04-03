@@ -23,6 +23,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SpeedIcon from '@mui/icons-material/Speed';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 
 const StatusCard = ({ website, onDelete }) => {
     const [latestPing, setLatestPing] = useState(null);
@@ -32,6 +33,15 @@ const StatusCard = ({ website, onDelete }) => {
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [highlight, setHighlight] = useState(false);
 
+    const history = useHistory();
+
+    const handleCardClick = (e) => {
+        
+        if (!e.target.closest('button') && !e.target.closest('.MuiDialog-root')) {
+            history.push(`/website/${website.id}`);
+        }
+    };
+
     useEffect(() => {
         const getLatestPing = async () => {
             try {
@@ -40,7 +50,6 @@ const StatusCard = ({ website, onDelete }) => {
                 if (results && results.length > 0) {
                     setLatestPing(prev => {
                         if (prev && prev.isUp !== results[0].isUp) {
-                            // Status changed, trigger highlight animation
                             setHighlight(true);
                             setTimeout(() => setHighlight(false), 2000);
                         }
@@ -124,7 +133,9 @@ const StatusCard = ({ website, onDelete }) => {
                     boxShadow: highlight 
                         ? '0 10px 20px rgba(0,0,0,0.4)' 
                         : '0 8px 16px rgba(0,0,0,0.2)',
+                    cursor: 'pointer'
                 }}
+                onClick={handleCardClick}
             >
                 <CardContent>
                     {/* Website info section */}
