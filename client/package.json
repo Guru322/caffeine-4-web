@@ -8,7 +8,7 @@
     "@fontsource/roboto": "^5.0.12",
     "@mui/icons-material": "^5.15.12",
     "@mui/material": "^5.15.12",
-    "axios": "^0.21.1",
+    "axios": "^0.30.0",
     "chart.js": "^3.9.1",
     "firebase": "^11.6.0",
     "nodemailer": "^6.10.0",
