@@ -19,10 +19,11 @@ import MonitorIcon from '@mui/icons-material/Monitor';
 import AddIcon from '@mui/icons-material/Add';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
-  const { currentUser, logout } = useAuth();
+  const { logout } = useAuth();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -136,6 +137,12 @@ const Navbar = () => {
                 <Avatar /> My account
               </MenuItem>
               <Divider />
+              <MenuItem component={RouterLink} to="/settings/notifications">
+                <ListItemIcon>
+                  <NotificationsIcon fontSize="small" />
+                </ListItemIcon>
+                Notification Settings
+              </MenuItem>
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon>
                   <LogoutIcon fontSize="small" />

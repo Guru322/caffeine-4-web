@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { db, admin } = require('../config/firebase');
+const { checkAndSendNotifications } = require('./notificationService');
 
 const pingWebsite = async (website) => {
     try {
@@ -24,6 +25,8 @@ const pingWebsite = async (website) => {
             lastChecked: admin.firestore.Timestamp.now()
         });
         
+        await checkAndSendNotifications(website, pingResult);
+        
         console.log(`Pinged ${website.url} - Status: ${response.status} - Response Time: ${duration}ms`);
         return pingResult;
     } catch (error) {
@@ -42,6 +45,8 @@ const pingWebsite = async (website) => {
             status: 'down',
             lastChecked: admin.firestore.Timestamp.now()
         });
+        
+        await checkAndSendNotifications(website, pingResult);
         
         console.log(`Failed to ping ${website.url} - Status: ${pingResult.status}`);
         return pingResult;

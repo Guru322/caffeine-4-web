@@ -13,6 +13,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import WebsiteDetails from './components/WebsiteDetails';
+import NotificationSettings from './components/NotificationSettings';
 
 function App() {
   return (
@@ -25,11 +26,12 @@ function App() {
               <Route exact path="/" component={LandingPage} />
               <Route path="/login" component={LandingPage} />
               
-              <Route path={["/dashboard", "/add-website", "/website/:websiteId"]}>
+              <Route path={["/dashboard", "/add-website", "/website/:websiteId", "/settings/notifications"]}>
                 <Navbar />
                 <ProtectedRoute path="/dashboard" component={Dashboard} />
                 <ProtectedRoute path="/add-website" component={WebsiteForm} />
                 <ProtectedRoute path="/website/:websiteId" component={WebsiteDetails} />
+                <ProtectedRoute path="/settings/notifications" component={NotificationSettings} />
               </Route>
             </Switch>
           </div>

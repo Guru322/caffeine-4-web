@@ -3,13 +3,13 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "your_api_key_here",
-  authDomain: "your _auth_domain_here",
-  projectId: "your_project_id_here",
-  storageBucket: "your_storage_bucket_here",
-  messagingSenderId: "your_messaging_sender_id_here",
-  appId: "your_app_id_here",
-  measurementId: "your_measurement_id_here"
+  apiKey: "your-api-key",
+  authDomain: "your-auth-domain",
+  projectId: "your-project-id",
+  storageBucket: "your-storage-bucket",
+  messagingSenderId: "your-messaging-sender-id",
+  appId: "your-app-id",
+  measurementId: "your-measurement-id"
 };
 
 const app = initializeApp(firebaseConfig);
