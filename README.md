@@ -1,6 +1,8 @@
 # Caffeine 4 Web
 
-![Caffeine 4 Web](https://via.placeholder.com/500x150?text=Caffeine+4+Web)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ac8af78e-31d6-458e-8c42-49cbb8e6846e" alt="Caffeine 4 Web" width="300"/>
+</p>
 
 ## 📝 Overview
 
