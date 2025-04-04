@@ -1,62 +1,111 @@
-# Website Monitor Server
+# Caffeine-4-Web Server
 
-This is the server-side component of the Website Monitor application. It is built using Node.js and Express, and it connects to a MongoDB database to store and manage website monitoring data.
+## Overview
+This is the server component of the Caffeine-4-Web application, designed to monitor websites by periodically sending requests to ensure they remain "awake" and responsive. The server handles website monitoring, notifications, and data management.
 
-## Project Structure
+## Features
+- **Automated Website Monitoring**: Pings websites every 30 seconds to check availability
+- **Status Tracking**: Records response times and status codes for each monitored site
+- **Notification System**: Sends email alerts when websites go down or come back online
+- **RESTful API**: Provides endpoints for website management and monitoring
+- **Data Management**: Automatically cleans up old ping results
+- **Firebase Integration**: Stores all monitoring data securely in Firestore
 
-- **src/**: Contains the source code for the server.
-  - **controllers/**: Contains the logic for handling requests related to websites and ping results.
-    - `websiteController.js`: Handles requests for adding and retrieving website data.
-    - `pingController.js`: Handles ping requests and processes the results.
-  - **models/**: Defines the MongoDB schemas for the application.
-    - `Website.js`: Schema for the website model, including URL and status.
-    - `PingResult.js`: Schema for the ping result model, including website ID, timestamp, and response time.
-  - **services/**: Contains background services for the application.
-    - `monitoringService.js`: Implements the logic for pinging websites at regular intervals and storing results.
-  - **routes/**: Sets up the API routes for the application.
-    - `api.js`: Connects the controllers to the API endpoints.
-  - **config/**: Contains configuration files.
-    - `db.js`: Configuration for connecting to the MongoDB database.
-  - `app.js`: Entry point for the Node.js/Express backend, setting up middleware and routes.
+## Technology Stack
+- Node.js
+- Express.js
+- Firebase Admin SDK
+- Axios for HTTP requests
+- Nodemailer for email notifications
+- dotenv for environment variable management
 
-## Getting Started
+## Installation
 
 ### Prerequisites
+- Node.js (v14 or later)
+- Firebase account with Firestore database
+- Gmail account for sending notifications
 
-- Node.js
-- MongoDB
+### Setup
+1. Clone the repository
+```bash
+git clone https://github.com/username/caffeine-4-web.git
+cd caffeine-4-web/server
+```
 
-### Installation
+2. Install dependencies
+```bash
+npm install
+```
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/Guru322/caffeine-4-web
-   ```
-2. Navigate to the server directory:
-   ```
-   cd server
-   ```
-3. Install the dependencies:
-   ```
-   npm install
-   ```
+3. Create a Firebase project and generate a service account key
+   - Go to the [Firebase Console](https://console.firebase.google.com/)
+   - Create a new project (or select existing one)
+   - Navigate to Project Settings > Service Accounts
+   - Click "Generate new private key"
+   - Save the JSON file as `src/serviceAccountKey.json`
 
-### Running the Server
+4. Configure environment variables
+   - Create a `.env` file in the server directory
+```
+PORT=5000
+EMAIL_USER=your-email@gmail.com
+EMAIL_APP_PASSWORD=your-app-password
+```
 
-1. Start the MongoDB service.
-2. Run the server:
-   ```
-   npm start
-   ```
+## Running the Server
+```bash
+# Development mode with auto-restart
+npm run dev
 
-The server will start and listen for incoming requests.
+# Production mode
+npm start
+```
 
-### API Endpoints
+## API Endpoints
 
-- `POST /api/websites`: Add a new website to monitor.
-- `GET /api/websites`: Retrieve a list of monitored websites.
-- `GET /api/ping-results`: Retrieve ping results for monitored websites.
+### Website Management
+- `POST /api/websites` - Add a new website to monitor
+- `GET /api/websites` - Get all monitored websites (optional userId query parameter)
+- `DELETE /api/websites/:id` - Delete a website
+
+### Monitoring
+- `POST /api/websites/:id/ping` - Manually trigger a ping for a website
+- `GET /api/websites/:id/ping-results` - Get ping history for a website
+
+## Directory Structure
+```
+server/
+├── src/
+│   ├── app.js                    # Main application entry point
+│   ├── serviceAccountKey.json    # Firebase service account credentials
+│   ├── config/
+│   │   └── firebase.js           # Firebase configuration
+│   ├── controllers/
+│   │   ├── pingController.js     # Ping-related API handlers
+│   │   └── websiteController.js  # Website management API handlers
+│   ├── routes/
+│   │   └── api.js                # API route definitions
+│   └── services/
+│       ├── cleanupService.js     # Data cleanup functionality
+│       ├── monitoringService.js  # Website monitoring functionality
+│       └── notificationService.js # Email notification system
+├── .env                          # Environment variables
+├── package.json                  # Project dependencies and scripts
+└── README.md                     # Project documentation
+```
+
+## Email Notifications
+The application sends email notifications when:
+- A monitored website goes down
+- A previously down website comes back online
+
+To enable email notifications:
+1. Ensure your Gmail account has "Less secure app access" enabled or use an App Password
+2. Update the EMAIL_USER and EMAIL_APP_PASSWORD in your .env file
+
+## Data Management
+Old ping results are automatically cleaned up daily to prevent database bloat. By default, ping results older than 30 days are removed.
 
 ## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
+MIT
